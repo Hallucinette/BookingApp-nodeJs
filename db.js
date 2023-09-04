@@ -1,77 +1,27 @@
 // 1. Importer Sequelize
-const {Sequelize, DataTypes} = require('sequelize');
+//const {Sequelize, DataTypes} = require('sequelize');
 
-// 2. Implémenter la configuration postgreSQL
-const sequelize = new Sequelize('postgres://apprenant11:@127.0.0.1:5432/postgres') // Example for postgres
+const { Sequelize } = require('sequelize');
 
-// 3. Création d'un modèle
-const Reservation = sequelize.define('Reservation', {
-  // Model attributes are defined here
-  number_of_customers: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  reservation_date: {
-    type: DataTypes.DATE,
-    allowNull: false
-  },
-  reservation_name: {
-    type: DataTypes.STRING(50),
-    allowNull: false
-  },
-  reservation_note: {
-    type: DataTypes.STRING(255),
-    allowNull: true
-  },
-  reservation_status: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-}, {
-  // Other model options go here
-});
+// configuration postgreSQL
+// const sequelize = new Sequelize('postgres://apprenant11:@127.0.0.1:5432/postgres') // Example for postgres
+const sequelize = new Sequelize('postgres://epwkclhi:fbEPb0_rJVV2IZ7dR5ThkJ4gf9jZqAbm@trumpet.db.elephantsql.com/epwkclhi') // Example for postgres
 
-const Spot = sequelize.define('Spot', {
+/* Création d'un objet vide db qui va contenir les modèles de la base de données. */
+const db = {};
 
-});
+db.user = require('./models/user.model.js')(sequelize);
+db.table = require('./models/table.model.js')(sequelize);
+db.room = require('./models/room.model.js')(sequelize);
+db.reservation = require('./models/reservation.model.js')(sequelize);
 
-const Room = sequelize.define('Room', {
+sequelize.sync({ force: true })
+  .then(() => {
+    console.log("Les tables ont été créées !");
+  })
+  .catch((error) => {
+    console.error("Erreur lors de la création des tables :", error);
+  });
 
-});
-
-const User = sequelize.define('User', {
-  user_role: {
-    type: DataTypes.STRING(50),
-    allowNull: false
-  },
-  firstname: {
-    type: DataTypes.STRING(50),
-    allowNull: false
-  },
-  lastname: {
-    type: DataTypes.STRING(50),
-    allowNull: false
-  },
-  email: {
-    type: DataTypes.STRING(50),
-    allowNull: false
-  },
-  phone: {
-    type: DataTypes.STRING(50),
-    allowNull: false
-  },
-  user_password:{
-    type: DataTypes.STRING,
-    allowNull: false
-  }
-});
-
-module.exports = {
-  Reservation,
-  Spot,
-  Room,
-  User
-};
- 
-// Classe => Référence / abstraction de votre entité
-// Object => Instance de votre classe
+// Pour que l'objet db puisse être utilisé dans d'autres parties de l'application
+module.exports = db;
