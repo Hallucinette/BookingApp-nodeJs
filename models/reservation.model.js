@@ -1,61 +1,42 @@
-const db = require('../db.js')
-const User = db.user;
+/*
+On importe DataTypes depuis le module sequelize 
+pour pouvoir définir les types de données des colonnes.
+ */
 
-exports.findAll = (req, res) => {
-    User.findAll().then(users => {
-        res.send(users)
-    })
-}
+const { DataTypes } = require('sequelize');
 
-exports.create = (req, res) => {
-    const {
-        firstname,
-        lastname,
-        email,
-        phone,
-        user_password
-    } = req.body;
-
-    User.create({
-        firstname: firstname,
-        lastname: lastname,
-        email: email,
-        phone: phone,
-        user_password: user_password,
-    }).then(user => {
-        res.send(user)
-    });
-};
-
-
-exports.update = (req, res) => {
-    const userId = req.params.id
-    User.update({
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-        email: req.body.email,
-        phone: req.body.phone,
-        user_password: req.body.user_password,
+/*
+Le module exporte une fonction qui prend en argument l'instance sequelize
+et utilise sa méthode define pour créer un nouveau modèle appelé Reservation.
+*/
+module.exports = (sequelize) => {
+    const Reservation = sequelize.define('Reservation', {
+        number_of_customers: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        reservation_date: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        reservation_name: {
+            type: DataTypes.STRING,
+            allowNull: false
+        },
+        reservation_note: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
+        reservation_status: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
     }, {
-        where: {
-            id: userId
-        }
-    }).then(() => {
-        res.status(200).send({
-            message: `User updated for userId: ${userId}`
-        });
+        /*
+            Peut contenir des options supplémentaires pour le modèle,
+            telles que:
+            des méthodes personnalisées, des configurations d'index, etc...
+        */
     });
-};
-
-exports.delete = (req, res) => {
-    const userId = req.params.id
-    User.destroy({
-        where: {
-            id: userId
-        }
-    }).then(() => {
-        res.status(200).send({
-            message: `User deleted for userId: ${userId}`
-        });
-    });
+    return Reservation;
 };
